@@ -6,4 +6,11 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
-    tools:showIn="@layout/activity_main"/>
+    tools:showIn="@layout/activity_main">
+
+    <com.github.beothorn.filterious.CustomView
+        android:id="@+id/custom"
+        android:layout_width="match_parent"
+        android:layout_height="204dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+

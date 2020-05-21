@@ -18,10 +18,7 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <com.github.beothorn.filterious.CustomView
-            android:id="@+id/custom"
-            android:layout_width="match_parent"
-            android:layout_height="204dp" />
+
 
     </com.google.android.material.appbar.AppBarLayout>
 
