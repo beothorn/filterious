@@ -5,53 +5,37 @@ import android.graphics.*
 import android.graphics.Color.argb
 import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.graphics.get
-import com.github.beothorn.filterious.nodes.Combine
-import com.github.beothorn.filterious.nodes.GrayScale
+import com.github.beothorn.filterious.nodes.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 class CustomView(context: Context, attrs: AttributeSet) : androidx.appcompat.widget.AppCompatImageView(context, attrs) {
 
-    companion object {
-        const val RED = 0
-        const val GREEN = 1
-        const val BLUE = 2
-        const val ALPHA = 3
-    }
-
     init{
         val bitmapImmutable = BitmapFactory.decodeResource(context.resources, R.drawable.sampleimage)
 
-        val scale = 4
-
-        val height = bitmapImmutable.height / scale
-        val width = bitmapImmutable.width / scale
-
-        var pixels = Array(width){
-            Array(height){
-                FloatArray(4)
-            }
-        }
-
-        for (y in 0 until height){
-            for (x in 0 until width){
-                val pixel = bitmapImmutable.getPixel(x*scale, y*scale)
-                pixels[x][y][RED] = Color.red(pixel)/255F
-                pixels[x][y][GREEN] = Color.green(pixel)/255F
-                pixels[x][y][BLUE] = Color.blue(pixel)/255F
-                pixels[x][y][ALPHA] = Color.alpha(pixel)/255F
-            }
-        }
-
+        val imageInput = ImageInput()
         val grayScale = GrayScale()
-        grayScale.setInput("Image", pixels)
-        val gray = grayScale.callNode()
         val combine = Combine()
-        combine.setInput("Image A", pixels)
-        combine.setInput("Image B", gray)
-        val result = combine.callNode()
+        val combineB = Combine()
+        val grayScaleB = GrayScale()
+        val grayScaleC = GrayScale()
+
+        imageInput.setInput("_ImageArray", Type.BITMAP, bitmapImmutable)
+        grayScale.setInput("Image", Type.RGBA_MATRIX, imageInput.output(""))
+
+        combine.setInput("Image A", Type.RGBA_MATRIX, imageInput.output(""))
+        combine.setInput("Image B", Type.RGBA_MATRIX, grayScale.output(""))
+
+        grayScaleB.setInput("Image", Type.RGBA_MATRIX, combine.output(""))
+
+        combineB.setInput("Image A", Type.RGBA_MATRIX, grayScaleB.output(""))
+        combineB.setInput("Image B", Type.RGBA_MATRIX, combine.output(""))
+
+        grayScaleC.setInput("Image", Type.RGBA_MATRIX, combineB.output(""))
+
+
+        val result = grayScaleC.output("") as Array<Array<FloatArray>>
 
         setImageBitmap(createBitmapFromMatrix(result))
     }
@@ -61,7 +45,7 @@ class CustomView(context: Context, attrs: AttributeSet) : androidx.appcompat.wid
         for (x in result.indices) {
             for (y in result[x].indices) {
                 val pixel = result[x][y]
-                bmp.setPixel(x, y, argb(pixel[ALPHA], pixel[RED], pixel[GREEN], pixel[BLUE]))
+                bmp.setPixel(x, y, argb(pixel[Node.ALPHA], pixel[Node.RED], pixel[Node.GREEN], pixel[Node.BLUE]))
             }
         }
         return bmp

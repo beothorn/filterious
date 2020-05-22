@@ -11,6 +11,9 @@
     <com.github.beothorn.filterious.CustomView
         android:id="@+id/custom"
         android:layout_width="match_parent"
-        android:layout_height="204dp" />
+        android:layout_height="204dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
